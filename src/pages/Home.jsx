@@ -24,9 +24,21 @@ function Home() {
     loadPopularMovies();
   }, []); // this is the useEffect hook that runs when the component mounts
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    alert(searchQuery);
+    if (!searchQuery.trim()) return;
+    if (loading) return; // to prevent the search bar from being cleared when the loading state is true
+    setLoading(true); // to show the loading state when the search is being performed
+    try {
+      const searchResults = await searchMovies(searchQuery); // this is the function that searches for movies
+      setMovies(searchResults); // this sets the state of the movies to the search results
+      setError(null); // clear the error we had before
+    } catch (err) {
+      console.log(err);
+      setError("Failed to search movies...");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
